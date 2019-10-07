@@ -31,10 +31,9 @@ function translate_to_RPN(expr){
             '*': 3,
             '/': 3
     };
-    const eos = 'E';
+    const eos = '\n';
     let operation_stack = [eos];
     let result =[];
-    
     expr += eos;
     let number = '';
     
@@ -47,7 +46,12 @@ function translate_to_RPN(expr){
         }
 
         if (cur_char == eos){
-        
+            
+            if (number){
+                result.push(number);
+                number = '';
+            }
+
             let tmp = operation_stack.pop();
             while( tmp != eos){ 
                 result.push(tmp);
@@ -77,7 +81,7 @@ function translate_to_RPN(expr){
                 
             let tmp = operation_stack.pop();
             
-            while( tmp != '(' ){  //check brackets pair in another plase
+            while( tmp != '(' ){  //check brackets pair in another place
                 result.push(tmp);
                 tmp = operation_stack.pop();
             }
@@ -114,7 +118,6 @@ function translate_to_RPN(expr){
 function eval_RPN(expr){
     
     const operators='*/+-';
-    let operand_stack =[];
     let result_stack = [];
 
     for(let i=0; i<expr.length; i++){
@@ -124,22 +127,31 @@ function eval_RPN(expr){
             continue;
         }
         
+        
+        let op2 = result_stack.pop();
+        let op1 = result_stack.pop();
+        
         switch (expr[i]){
             case '+':
+                result_stack.push( +op1 + +op2);
                 break;
             case '-':
+                result_stack.push(op1 - op2);
                 break;
             case '*':
+                result_stack.push(op1 * op2);
                 break;
             case '/':
+                if (+op2 == 0) { 
+                    throw new Error ('TypeError: Division by zero.');
+                }
+                result_stack.push(op1 / op2);
                 break;
         }
     }
     
-    return result_stack;
+    return +result_stack;
 }
-
-const expr = " 20 - 57 * 12 - (  58 + 84 * 32 / 27  ) ";
 
 function expressionCalculator(expr) {
     // write your solution here
@@ -147,11 +159,9 @@ function expressionCalculator(expr) {
         throw new Error('ExpressionError: Brackets must be paired');
     }
 
-
+    return eval_RPN(translate_to_RPN(expr));
 }
 
-res = eval_RPN(translate_to_RPN(expr));
-console.log(res);
-//  module.exports = {
-//      expressionCalculator
-//  }
+module.exports = {
+     expressionCalculator
+}
