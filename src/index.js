@@ -37,21 +37,18 @@ function translate_to_RPN(expr){
     
     expr += eos;
     let number = '';
-    console.log(expr);
     
     for(let cur_pos=0; cur_pos < expr.length; cur_pos++){
         
         let cur_char = expr[cur_pos];
-        
-        console.log(cur_char);
         
         if( cur_char == ' '){
             continue;
         }
 
         if (cur_char == eos){
+        
             let tmp = operation_stack.pop();
-            console.log(operation_stack);
             while( tmp != eos){ 
                 result.push(tmp);
                 tmp = operation_stack.pop();
@@ -110,7 +107,37 @@ function translate_to_RPN(expr){
     return result;
 }
 
+//*
+// evaluate expression in RPN
+// @param: expr is RPN expression as array
+//*
+function eval_RPN(expr){
+    
+    const operators='*/+-';
+    let operand_stack =[];
+    let result_stack = [];
 
+    for(let i=0; i<expr.length; i++){
+        
+        if(operators.indexOf(expr[i]) == -1){
+            result_stack.push(expr[i]);
+            continue;
+        }
+        
+        switch (expr[i]){
+            case '+':
+                break;
+            case '-':
+                break;
+            case '*':
+                break;
+            case '/':
+                break;
+        }
+    }
+    
+    return result_stack;
+}
 
 const expr = " 20 - 57 * 12 - (  58 + 84 * 32 / 27  ) ";
 
@@ -119,9 +146,11 @@ function expressionCalculator(expr) {
     if( !checkBrackets(expr) ){
         throw new Error('ExpressionError: Brackets must be paired');
     }
+
+
 }
 
-res = translate_to_RPN(expr);
+res = eval_RPN(translate_to_RPN(expr));
 console.log(res);
 //  module.exports = {
 //      expressionCalculator
